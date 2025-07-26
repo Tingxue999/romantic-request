@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>浪漫请求</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: white;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    #canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+    }
+
+    .button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: rgba(255, 105, 180, 0.8);
+      border: none;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 20px pink;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 20px pink; }
+      50% { box-shadow: 0 0 40px hotpink; }
+      100% { box-shadow: 0 0 20px pink; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div class="center">
+  <button class="button" onclick="showMessage()">请点击</button>
+</div>
+
+<script>
+  function showMessage() {
+    setTimeout(() => {
+      alert("爸我想跟你要点钱用，还个花呗。");
+    }, 300); // 稍微延迟一下，更有仪式感
+  }
+
+  // 浪漫粒子背景动画（心形粒子效果）
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  function Particle() {
+    this.x = canvas.width / 2;
+    this.y = canvas.height / 2;
+    const angle = Math.random() * 2 * Math.PI;
+    const radius = 2 + Math.random() * 2;
+    this.vx = Math.cos(angle) * (Math.random() * 2);
+    this.vy = Math.sin(angle) * (Math.random() * 2);
+    this.size = radius;
+    this.life = 100;
+    this.r = 255;
+    this.g = Math.floor(Math.random() * 100 + 100);
+    this.b = Math.floor(Math.random() * 150 + 100);
+  }
+
+  Particle.prototype.update = function () {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= 1;
+  }
+
+  Particle.prototype.draw = function () {
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(${this.r},${this.g},${this.b},${this.life / 100})`;
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (particles.length < 200) {
+      for (let i = 0; i < 3; i++) {
+        particles.push(new Particle());
+      }
+    }
+    particles.forEach((p, i) => {
+      p.update();
+      p.draw();
+      if (p.life <= 0) particles.splice(i, 1);
+    });
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+</script>
+
+</body>
+</html>
